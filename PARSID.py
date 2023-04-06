@@ -20,7 +20,7 @@ import os.path
 
 input_file = input("Insert file name (without file extension):")  # file has to be in the same folder of the script
 ref_library = input("Insert Reference Sequences Library name (without file extension):")
-cutoff_pident = input("Percent identity cut-off in BLAST:")  # remove all results below a certain cut-off, e.g. 90%
+cutoff_pident = input("Percent identity cut-off in BLAST:")  # do not save in .txt file results below a certain cut-off, e.g. 90%
 
 cline = NcbiblastnCommandline(query=input_file + ".fasta", db="ref_library",
                               evalue=0.001, max_target_seqs=150,
@@ -61,7 +61,7 @@ print("Parsing completed!")
 # THIRD STEP: define fields to check (keywords, species lineages, %id)
 # and their check tags from a .csv (Columns: "Label", "Check_tag")
 
-intersp_div = input("Percent interspecific sequence divergence:")  # >3% in Mantellids
+intersp_div = input("Percent interspecific sequence divergence:")
 path = "./" + "Check_tags.csv"
 check_tags = pd.read_csv("Check_tags.csv", sep=None, engine="python")  # Check-in tags
 
@@ -69,7 +69,7 @@ df["notes"] = ""  # Add the empty notes column to the results dataframe
 df_notes = []
 qry_to_check = []
 for qry, pid, sp, qc, note in zip(df["query"], df["%id"], df["best_match"], df["%qcov"], df["notes"]):
-    if (pid != "NA" and pid < (100 - float(intersp_div))) or (qc < 75):  # if %id<97% or qcov<75%, label as "to check"
+    if (pid != "NA" and pid < (100 - float(intersp_div))) or (qc < 75):
         note = "to_check"
         qry_to_check.append(qry)
     else:
@@ -106,7 +106,7 @@ with open(ref_library + ".fasta", "r") as fasta:
     keys.append("Results %id <" + cutoff_pident)
 d = {key: [] for key in keys}
 
-# Store all the codes in the input fasta to count the outgroups (<90%)
+# Store all the codes in the input fasta to count the outgroups
 samples = []
 with open(input_file + ".fasta", "r") as fasta:
     for sam in SeqIO.parse(fasta, "fasta"):
@@ -187,6 +187,3 @@ with pd.ExcelWriter(input_file + ".xlsx") as writer:
     worksheet4 = writer.sheets["Summary"]
     worksheet4.set_column("A:A", 25, format4)
     worksheet4.set_row(3, None, format1)
-
-# Input16S_test
-# ReferenceSequencesDatabase_16S_test
