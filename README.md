@@ -62,6 +62,13 @@ The results tagged as "to check" are stored to be printed in a separate sheet "R
 
 ## Step 5. Saving final output in EXCEL format
 The final output is saved in a easy-to-consult spreadsheet. The final part of the code includes output file formatting.
+```
+with pd.ExcelWriter(input_file + ".xlsx") as writer:
+    df.to_excel(writer, index=False, sheet_name="Best_blast")
+    df_to_check.to_excel(writer, index=False, sheet_name="Results_to_check")
+    df_lineage.to_excel(writer, index=False, sheet_name="Lineages")
+    df_stats.to_excel(writer, index=False, sheet_name="Summary")
+```
 The sheets are:
 1. Best_blast: includes the list of samples with the respective percentage of identity, molecular species identification, percentage of query coverage, query length, subject length, alignment length, evalue, notes
 2. Results_to_check: includes the full list of hits for the samples that were tagged as "to check" in the notes. The fields are the same as the sheet "Best_blast", but without the notes.
@@ -77,10 +84,3 @@ The sheets are:
    | Sequences processed (%)  | percentage of the sequences analyzed by the script (ideally is 100%) |
    | N results %id<`cutoff_pident` | number of results below the user's value `cutoff_pident` |
  
-```
-with pd.ExcelWriter(input_file + ".xlsx") as writer:
-    df.to_excel(writer, index=False, sheet_name="Best_blast")
-    df_to_check.to_excel(writer, index=False, sheet_name="Results_to_check")
-    df_lineage.to_excel(writer, index=False, sheet_name="Lineages")
-    df_stats.to_excel(writer, index=False, sheet_name="Summary")
-```
