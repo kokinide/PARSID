@@ -71,7 +71,7 @@ with pd.ExcelWriter(input_file + ".xlsx") as writer:
     df_stats.to_excel(writer, index=False, sheet_name="Summary")
 ```
 The sheets are:
-1. Best_blast: includes the list of samples with the respective percentage of identity, molecular species identification, percentage of query coverage, query length, subject length, alignment length, evalue, notes
+1. Best_blast: includes the list of samples with the respective percentage of identity, molecular species identification, percentage of query coverage, query length, subject length, alignment length, evalue, notes. In this sheet, the values of percentage identity below the similarity threshold are highlighted in red. 
 2. Results_to_check: includes the full list of hits for the samples that were tagged as "to check" in the notes. The fields are the same as the sheet "Best_blast", but without the notes.
 3. Lineages: includes the list of all the lineages in the RSL with the samples found for each. The last field is "Results %id <" + `cutoff_pident`, that lists all the samples below the user's value.
 4. Summary: includes general information about the inputs. The stats are:
