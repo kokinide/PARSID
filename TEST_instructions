@@ -3,7 +3,7 @@ cutoff_pident (%) = 90
 intersp_div (%) = 3 
 
 
-I included in the `ReferenceSequencesDatabase_16S_test.fasta` some sequences of the frog family Mantellidae from Madagascar to simulate a RSL. These sequences have updted taxonomic nomenclature.
+I included in the `ReferenceSequencesDatabase_16S_test.fasta` 25 sequences of the frog family Mantellidae from Madagascar to simulate a RSL. These sequences have updted taxonomic nomenclature.
 **Note**: the example file does not represent the real Mantellidae diversity (approximately 500 lineages).
 
-In the `Input16S.fasta` I included some old sequences from GenBank, which have an outdated nomenclature, to simulate the process of molecular species identification. I also included one sequence that does not belong to Mantellidae.
+In the `Input16S.fasta` I included 10 sequences from GenBank with an outdated nomenclature, to simulate the process of molecular species identification. I also included one sequence that does not belong to Mantellidae.
