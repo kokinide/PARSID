@@ -24,7 +24,7 @@ This is the only step that needs to be run from the Python terminal.
 ```
 makeblastdb -in ReferenceSequencesDatabase_16S_test.fasta -parse_seqids -out ref_library -dbtype nucl
 ```
-At the end of this step, the BLAST indices should appear in the folder.
+At the end of this step, the local BLAST indices should appear in the folder.
 
 ## Step 2. Local BLAST
 The script asks the user the file names of the `input_file` and the RSL `ref_library`, to be provided without file extension. At this stage, the user needs to provide the `cutoff_pident`, which is the cut-off in the BLAST percent sequence identity (under that value the results will not be saved in the local BLAST result).
