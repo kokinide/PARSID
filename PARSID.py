@@ -1,10 +1,5 @@
 # Blasts a fasta file against a Reference Sequences Library, parses the results and creates a result Excel file
 
-# Files needed:
-# Fasta file to BLAST
-# Reference Sequences Library: it contains the barcoding marker sequences for each lineage
-# Check_tags file: it contains the check warnings to assign to genera/species/lineages that need to be manually checked
-
 # FIRST STEP: create the local BLAST indices with this command line in Python terminal:
 # makeblastdb -in ReferenceSequencesDatabase_16S_test.fasta -parse_seqids -out ref_library -dbtype nucl
 # Then obtain the BLAST result in .txt format
@@ -18,23 +13,24 @@ import pandas as pd
 from operator import itemgetter
 import os.path
 
+# USER VARIABLES
 input_file = input("Insert file name (without file extension):")  # file has to be in the same folder of the script
 ref_library = input("Insert Reference Sequences Library name (without file extension):")
-cutoff_pident = input("Percent identity cut-off in BLAST:")  # do not save in .txt file results below a certain cut-off, e.g. 90%
+cutoff_pident = input("Percent identity cut-off in BLAST:")  # does not save in .txt file results below a certain cut-off, e.g. <90%
 
+# SECOND STEP: run the local BLAST
 cline = NcbiblastnCommandline(query=input_file + ".fasta", db="ref_library",
                               evalue=0.001, max_target_seqs=150,
                               perc_identity=cutoff_pident, out=input_file + ".txt",
                               outfmt="6 std qlen slen gaps qcovs")
 # for specific fields check blastn -help in outfmt, otherwise 12 standard fields
 # STD = "qseqid" "sseqid" "pident" "length" "mismatch" "gapopen" "qstart" "qend" "sstart" "send" "evalue" "bitscore"
-# ADDED= "qlen" "slen" "gaps" "qcovs"
+# ADDED = "qlen" "slen" "gaps" "qcovs"
 print(cline)
 cline()  # Execute blast command line
 
-#
-# SECOND STEP: parse the local blast result
 
+# THIRD STEP: parse the local blast result
 best_blasts = []  # Create an empty blast result list
 my_fields = "qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore qlen slen gaps qcovs"
 QueryResults = SearchIO.parse(input_file + ".txt", "blast-tab", fields=my_fields)
@@ -57,13 +53,13 @@ df = pd.DataFrame(best_blasts, columns=("query", "%id", "best_match", "%qcov", "
 
 print("Parsing completed!")
 
-#
-# THIRD STEP: define fields to check (keywords, species lineages, %id)
-# and their check tags from a .csv (Columns: "Label", "Check_tag")
+
+# FOURTH STEP: checking results. Additional info from Check_tags.csv file (Columns: "Label", "Check_tag")
 
 intersp_div = input("Percent interspecific sequence divergence:")
 path = "./" + "Check_tags.csv"
-check_tags = pd.read_csv("Check_tags.csv", sep=None, engine="python")  # Check-in tags
+if os.path.isfile(path): # check if the file exist 
+  check_tags = pd.read_csv("Check_tags.csv", sep=None, engine="python")  
 
 df["notes"] = ""  # Add the empty notes column to the results dataframe
 df_notes = []
@@ -83,7 +79,6 @@ df["notes"] = df_notes
 # Saving blast results for only the results labelled to_check
 df_to_check = pd.DataFrame()
 all_blast = pd.read_csv(input_file + ".txt", sep="\t", names=my_fields.split(), index_col=None)
-# my_fields = "qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore qlen slen gaps qcovs"
 for check in qry_to_check:
     check_qry = all_blast[all_blast["qseqid"] == check]
     check_qry= check_qry.sort_values(by="pident", ascending=False)
@@ -93,8 +88,8 @@ df_to_check = df_to_check[["qseqid","pident","sseqid","qcovs","qlen","slen","len
 
 df_to_check.columns = ["query","%id","best_match","%qcov","qlen","slen","aln_len","evalue"]
 
-#
-# FOURTH STEP: Statistics of the BLAST and assignment the sample code to the lineage
+
+#General statistics and counts
 
 data_lineage = []  # Create an empty data statistics list
 keys = []  # List of RSL taxa
@@ -140,16 +135,16 @@ df_lineage.rename(columns={"index": "Lineages"}, inplace=True)
 n_fasta = len([1 for line in open(input_file + ".fasta") if line.startswith(">")])
 
 if data_lineage["Results %id <" + cutoff_pident][0] != "NA":
-    outg = len(data_lineage["Results %id <" + cutoff_pident][0].split(";"))  # Counts of "Outgroup"
+    outg = len(data_lineage["Results %id <" + cutoff_pident][0].split(";"))  # Counts of results below cut-off
 else:
     outg = 0
-n_taxa = len(data_lineage) - 1  # Counts of taxa. Remove 1 because of "Outgroup"
+n_taxa = len(data_lineage) - 1  # Counts of taxa. Remove 1 because of "Results %id<cut-off"
 df_stats = pd.DataFrame({"Stats": ["Total taxa RSL", "Taxa without samples", "Taxonomic coverage (%)",
                                    "Total input sequences", "Sequences processed (%)",
                                    "N results %id <" + cutoff_pident],
                          "n": [n_taxa, n_missing, ((n_taxa - n_missing) / n_taxa*100), n_fasta, (n_exc / n_fasta)*100, outg]})
 
-#
+
 # FIFTH STEP: Excel with results creation
 
 with pd.ExcelWriter(input_file + ".xlsx") as writer:
@@ -158,7 +153,7 @@ with pd.ExcelWriter(input_file + ".xlsx") as writer:
     df_lineage.to_excel(writer, index=False, sheet_name="Lineages")
     df_stats.to_excel(writer, index=False, sheet_name="Summary")
 
-    # Color highlights
+    # Formatting
     workbook = writer.book
     format1 = workbook.add_format({"num_format": "0.0"})
     format2 = workbook.add_format({"num_format": "0.00E+00"})
