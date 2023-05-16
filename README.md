@@ -1,4 +1,4 @@
-# PARSID
+# PARSID.py
 
 PARSID.py (PArser for Rapid Species IDentification) is a script implemented in Python. It provides an automated solution for the molecular species identification of sequences of a chosen genetic marker. It covers the workflow from the creation of the custom database for the local BLAST, to parsing the results and filtering them, and finally providing an easy-to-consult output in EXCEL format. In the filtering step the user inputs cut-off variables, and can provide, if necessary, a supplementary file integrating specific check warnings.
 
