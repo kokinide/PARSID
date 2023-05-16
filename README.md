@@ -1,8 +1,10 @@
-# PARSID.py
+# PARSID
 
-PARSID.py (PArser for Rapid Species IDentification) is a script implemented in Python. It provides an automated solution for the molecular species identification of sequences of a chosen genetic marker. It covers the workflow of the generation from the creation of the custom database for the local BLAST, to parsing the results and filtering them, and provides an easy-to-consult output in EXCEL format. The filtering is controlled by the user, by inputting cut-off variables, and by providing if necessary, a supplementary file to integrate specific check warnings.
+PARSID.py (PArser for Rapid Species IDentification) is a script implemented in Python. It provides an automated solution for the molecular species identification of sequences of a chosen genetic marker. It covers the workflow from the creation of the custom database for the local BLAST, to parsing the results and filtering them, and finally providing an easy-to-consult output in EXCEL format. In the filtering step the user inputs cut-off variables, and can provide, if necessary, a supplementary file integrating specific check warnings.
 
-## Packages needed:
+## Packages:
+The script runs with Biopython 1.78 and Xlswriter 3.0.9.
+Biopython, Xlsxwriter and pandas need to be installed prior executing the following command. If you use an IDE like PyCharm, the installation of these packages should be easy enough.
 ```
 from Bio.Blast.Applications import NcbiblastnCommandline
 from Bio import SearchIO
@@ -12,15 +14,16 @@ import pandas as pd
 from operator import itemgetter
 import os.path
 ```
+Additionally, blast+ should be locally installed to run Step 1.
 
 ## Files needed
 1. **Input file**: FASTA file containing the sequences with unique identifiers (e.g. extraction codes, vouchers, accession numbers). **Note**: the unique sequence identifiers should not include special characters (e.g. spaces, vertical bars). The sequences should not include gaps. Example file:`Input16S_test.fasta`
 2. **Reference Sequences Library (RSL)**: single-marker multi-FASTA file against which the local BLAST of the input file is performed. For each lineage of the study group, it contains a representative sequence for each nominal species bearing taxonomic updated nomenclature, and each candidate species (if any) bearing unique working names. This multi-FASTA file needs to be structured with unique identifiers for each sequence, which are strings containing either taxonomic relevant information (e.g. species name, voucher etc.) or accession numbers if the sequence is obtained from GenBank. **Note**: the unique sequence identifiers should not include special characters (e.g. spaces, vertical bars) that can hamper the functioning of the code (especially Step 1). The sequences should not include gaps. Example file: `ReferenceSequencesDatabase_16S_test.fasta`
-3. **Check_tags file (not mandatory)**: CSV format file (delimiters accepted: comma, semicolon, tab, or space) containing the list of the taxa to tag and manually check later. **Note**: the file should be organized into two columns, “Label” and “Check_tag”. "Label" can include the whole species name or just a portion (e.g. genus, species, lineage unique code identifier, accession number, etc.), as it is spelled in the RSL. "Check_tag" can include whichever check warning associated to that specific label, that will show next to the molecular identification of the lineage (e.g. check sampling locality, check specimen pictures, etc.). For the tagged lineages the molecular identification alone is not enough to reliably assign a sample to a lineage, and in those cases further data need to be checked at a later stage (e.g. collection locality, pictures, etc.). Example file:`Check_tags.csv`
+3. **Check_tags file (not mandatory)**: CSV format file (delimiters accepted: comma, semicolon, tab, or space) containing the list of the taxa to tag and manually check later. Molecular data alone are not enough for a reliable identification of some lineages, and in these cases further data need to be integrated (e.g. collection locality, pictures, etc.). **Note**: the file should be organized into two columns, “Label” and “Check_tag”. "Label" can include the whole species name or just a portion (e.g. genus, species, lineage unique code identifier, accession number, etc.; note that it has to be spelled as in the RSL). "Check_tag" can include whichever check warning associated to that specific label, that will be printed next to the molecular identification of the lineage (e.g. check sampling locality, check specimen pictures, etc.). Example file:`Check_tags.csv`
 
 
 ## Step 1. Create the custom database for the local BLAST from the RSL
-This is the only step that needs to be run from the Python terminal.
+This is the only step that needs to be run from the shell.
 ```
 makeblastdb -in ReferenceSequencesDatabase_16S_test.fasta -parse_seqids -out ref_library -dbtype nucl
 ```
