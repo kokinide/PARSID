@@ -25,7 +25,7 @@ Additionally, blast+ should be locally installed to run Step 1.
 ## Step 1. Create the custom database for the local BLAST from the RSL
 This is the only step that needs to be run from the shell.
 ```
-makeblastdb -in ReferenceSequencesDatabase_16S_test.fasta -parse_seqids -out ref_library -dbtype nucl
+makeblastdb -in RSL_16S_test.fasta -parse_seqids -out ref_library -dbtype nucl
 ```
 At the end of this step, the local BLAST indices should appear in the folder.
 
