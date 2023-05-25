@@ -40,13 +40,14 @@ for QueryResult in QueryResults:
     for hit in QueryResult.hits:
         for hsp in hit.hsps:
             qcov = (hsp.query_end - hsp.query_start) / QueryResult.seq_len * 100  # no +1 (Python starts from 0)
-            if (qcov >= 75) or (hit.seq_len > 0.9 * hsp.aln_span):
+            if (qcov >= 75) or (hsp.aln_span > 0.9 * hit.seq_len):
                 # Check for aln length, in case of very short queries/subjects
                 to_sort.append((QueryResult.id, hsp.ident_pct, hit.id, qcov, QueryResult.seq_len, hit.seq_len,
                                 hsp.aln_span, hsp.evalue))
     # "query", "%id", "best_match", "%qcov", "qlen", "slen", "aln_len", "evalue"
     sorted_by_perc_id = sorted(to_sort, reverse=True, key=itemgetter(1))  # Sort hits by %id by descending order
-    best_blasts.append(sorted_by_perc_id[0])  # Put the first result of the list in the blast result list
+    if len(sorted_by_perc_id) != 0:
+       best_blasts.append(sorted_by_perc_id[0])  # Put the first result of the list in the blast result list
 
 # Load the blast result list in a dataframe
 df = pd.DataFrame(best_blasts, columns=("query", "%id", "best_match", "%qcov", "qlen", "slen", "aln_len", "evalue"))
