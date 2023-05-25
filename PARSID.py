@@ -77,16 +77,15 @@ for qry, pid, sp, qc, note in zip(df["query"], df["%id"], df["best_match"], df["
 df["notes"] = df_notes
 
 # Saving blast results for only the results labelled to_check
-df_to_check = pd.DataFrame()
+df_to_check = pd.DataFrame(columns = ["query","%id","best_match","%qcov","qlen","slen","aln_len","evalue"])
 all_blast = pd.read_csv(input_file + ".txt", sep="\t", names=my_fields.split(), index_col=None)
 for check in qry_to_check:
-    check_qry = all_blast[all_blast["qseqid"] == check]
-    check_qry= check_qry.sort_values(by="pident", ascending=False)
-    df_to_check = pd.concat([df_to_check, check_qry])
+   check_qry = all_blast[all_blast["qseqid"] == check]
+   check_qry= check_qry.sort_values(by="pident", ascending=False)
+   df_to_check = pd.concat([df_to_check, check_qry])
 
-df_to_check = df_to_check[["qseqid","pident","sseqid","qcovs","qlen","slen","length","evalue"]]
-
-df_to_check.columns = ["query","%id","best_match","%qcov","qlen","slen","aln_len","evalue"]
+if not(df_to_check.empty):
+  df_to_check = df_to_check[["qseqid","pident","sseqid","qcovs","qlen","slen","length","evalue"]]
 
 
 #General statistics and counts
