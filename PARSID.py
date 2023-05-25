@@ -167,6 +167,10 @@ with pd.ExcelWriter(input_file + ".xlsx") as writer:
                                                           "criteria": "<",
                                                           "value": (100 - float(intersp_div)),
                                                           "format": format3})
+    worksheet1.conditional_format("D1:D" + str(len(df)+1), {"type": "cell",
+                                                          "criteria": "<",
+                                                          "value": 75,
+                                                          "format": format3})
     worksheet1.autofit()
 
     worksheet2 = writer.sheets["Results_to_check"]
