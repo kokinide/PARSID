@@ -1,4 +1,5 @@
 # PARSID.py
+[![DOI](https://zenodo.org/badge/624476229.svg)](https://zenodo.org/badge/latestdoi/624476229)
 
 PARSID.py (PArser for Rapid Species IDentification) is implemented in Python and provides an automated solution for the molecular species identification of unknown sequences of a selected marker. It automates the workflow from the creation of the custom database for the local BLAST, to parsing the results and filtering them, and finally providing an easy-to-consult output in EXCEL format. At the beginning, the user inputs cut-off variables and can provide, if necessary, a supplementary file integrating specific check warnings.
 
